@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect, vi, beforeAll } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { BalanceDisplay } from "../../components/BalanceDisplay";
 
 // Mock the imports that cause issues with TextEncoder
@@ -78,7 +78,7 @@ describe("BalanceDisplay Component", () => {
             global.customElements = {
                 get: () => undefined,
                 define: () => {},
-            } as any;
+            } as unknown as CustomElementRegistry;
         }
 
         const { container } = render(<BalanceDisplay />);

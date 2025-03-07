@@ -3,12 +3,7 @@ import { useBalance } from "wagmi";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { kiiTestnet } from "@/config/chains";
 import { formatUnits } from "viem";
-import {
-    WKII_ADDRESS,
-    WKII_TOKEN,
-    POLLING_INTERVAL,
-    BALANCE_OF_ABI,
-} from "@/config/constants";
+import { WKII_ADDRESS, WKII_TOKEN, POLLING_INTERVAL } from "@/config/constants";
 
 /**
  * Custom hook to fetch and manage token balances

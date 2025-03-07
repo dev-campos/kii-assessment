@@ -16,15 +16,30 @@ afterEach(() => {
 
 // Fix for TextEncoder not being available in Node.js environment
 class MockTextEncoder {
-    encode(input) {
+    encode(input: string) {
         return new Uint8Array([...input].map((char) => char.charCodeAt(0)));
+    }
+
+    // Implement missing properties for compatibility
+    encoding = "utf-8";
+
+    // Implement missing methods for compatibility
+    encodeInto(source: string, destination: Uint8Array) {
+        const encoded = this.encode(source);
+        destination.set(encoded);
+        return { read: source.length, written: encoded.length };
     }
 }
 
 class MockTextDecoder {
-    decode(input) {
-        return String.fromCharCode.apply(null, input);
+    decode(input: Uint8Array) {
+        return String.fromCharCode(...input);
     }
+
+    // Implement missing properties for compatibility
+    encoding = "utf-8";
+    fatal = false;
+    ignoreBOM = false;
 }
 
 // Add globals

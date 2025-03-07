@@ -28,12 +28,21 @@ const formatBalance = (
 };
 
 // Define a function to check for wallet rejection in different error formats
-const isWalletRejection = (error: any): boolean => {
+const isWalletRejection = (error: {
+    message?: string;
+    name?: string;
+    details?: string;
+    error?: {
+        message?: string;
+        name?: string;
+        details?: string;
+    };
+}): boolean => {
     if (!error) return false;
 
     // Check main error message
     if (
-        typeof error.message === "string" &&
+        typeof error?.message === "string" &&
         (error.message.includes("rejected") ||
             error.message.includes("denied") ||
             error.message.includes("User rejected"))
@@ -42,7 +51,7 @@ const isWalletRejection = (error: any): boolean => {
     }
 
     // Check for viem ContractFunctionExecutionError with details
-    if (error.name === "ContractFunctionExecutionError" && error.details) {
+    if (error?.name === "ContractFunctionExecutionError" && error.details) {
         return (
             error.details.includes("denied") ||
             error.details.includes("rejected")
@@ -50,7 +59,7 @@ const isWalletRejection = (error: any): boolean => {
     }
 
     // Check for nested error objects
-    if (error.error) {
+    if (error?.error) {
         return isWalletRejection(error.error);
     }
 
@@ -181,20 +190,31 @@ export const BalanceDisplay = () => {
                     );
                 }
             })
-            .catch((err: any) => {
-                console.error("Wrap error:", err);
+            .catch(
+                (err: {
+                    message?: string;
+                    name?: string;
+                    details?: string;
+                    error?: {
+                        message?: string;
+                        name?: string;
+                        details?: string;
+                    };
+                }) => {
+                    console.error("Wrap error:", err);
 
-                // Handle user rejection or other errors
-                if (isWalletRejection(err)) {
-                    setError("Transaction was rejected in wallet.");
-                } else {
-                    // For other errors, display either the message or a fallback
-                    const errorMessage =
-                        err?.message || "Unknown error occurred";
-                    setError(`Failed to wrap tokens: ${errorMessage}`);
+                    // Handle user rejection or other errors
+                    if (isWalletRejection(err)) {
+                        setError("Transaction was rejected in wallet.");
+                    } else {
+                        // For other errors, display either the message or a fallback
+                        const errorMessage =
+                            err?.message || "Unknown error occurred";
+                        setError(`Failed to wrap tokens: ${errorMessage}`);
+                    }
+                    setTxStatus(""); // Clear any existing status messages
                 }
-                setTxStatus(""); // Clear any existing status messages
-            });
+            );
     }, [amount, insufficientNative, wrap, refetch]);
 
     const handleUnwrap = useCallback(() => {
@@ -228,20 +248,31 @@ export const BalanceDisplay = () => {
                     );
                 }
             })
-            .catch((err: any) => {
-                console.error("Unwrap error:", err);
+            .catch(
+                (err: {
+                    message?: string;
+                    name?: string;
+                    details?: string;
+                    error?: {
+                        message?: string;
+                        name?: string;
+                        details?: string;
+                    };
+                }) => {
+                    console.error("Unwrap error:", err);
 
-                // Handle user rejection or other errors
-                if (isWalletRejection(err)) {
-                    setError("Transaction was rejected in wallet.");
-                } else {
-                    // For other errors, display either the message or a fallback
-                    const errorMessage =
-                        err?.message || "Unknown error occurred";
-                    setError(`Failed to unwrap tokens: ${errorMessage}`);
+                    // Handle user rejection or other errors
+                    if (isWalletRejection(err)) {
+                        setError("Transaction was rejected in wallet.");
+                    } else {
+                        // For other errors, display either the message or a fallback
+                        const errorMessage =
+                            err?.message || "Unknown error occurred";
+                        setError(`Failed to unwrap tokens: ${errorMessage}`);
+                    }
+                    setTxStatus(""); // Clear any existing status messages
                 }
-                setTxStatus(""); // Clear any existing status messages
-            });
+            );
     }, [amount, insufficientWrapped, unwrap, refetch]);
 
     // Memoize the input change handler
