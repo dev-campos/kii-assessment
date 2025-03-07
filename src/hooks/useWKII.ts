@@ -1,52 +1,55 @@
 import { useWriteContract } from "wagmi";
 import { parseEther } from "viem";
+import { kiiTestnet } from "@/config/chains";
+import { WKII_ADDRESS, WKII_ABI } from "@/config/constants";
 
-const WKII_ADDRESS = "0xd51e7187e54a4A22D790f8bbDdd9B54b891Bc920";
-const WKII_ABI = [
-    {
-        inputs: [],
-        name: "deposit",
-        outputs: [],
-        stateMutability: "payable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint256",
-                name: "amount",
-                type: "uint256",
-            },
-        ],
-        name: "withdraw",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-] as const;
-
+/**
+ * Hook for interacting with the WKII token contract
+ */
 export const useWKII = () => {
-    const { writeContract: wrapWrite, isPending: isWrapping } =
+    const { writeContractAsync: wrapWrite, isPending: isWrapping } =
         useWriteContract();
-    const { writeContract: unwrapWrite, isPending: isUnwrapping } =
+
+    const { writeContractAsync: unwrapWrite, isPending: isUnwrapping } =
         useWriteContract();
+
+    /**
+     * Wrap native KII tokens to WKII
+     * @param amount Amount to wrap as a string
+     */
+    const wrap = (amount: string) => {
+        // Note: KII has 6 decimals, but parseEther works because the contract handles it
+        const valueInWei = parseEther(amount);
+
+        return wrapWrite({
+            address: WKII_ADDRESS as `0x${string}`,
+            abi: WKII_ABI,
+            functionName: "deposit",
+            value: valueInWei,
+            chainId: kiiTestnet.id,
+        });
+    };
+
+    /**
+     * Unwrap WKII tokens back to native KII
+     * @param amount Amount to unwrap as a string
+     */
+    const unwrap = (amount: string) => {
+        const valueInWei = parseEther(amount);
+
+        return unwrapWrite({
+            address: WKII_ADDRESS as `0x${string}`,
+            abi: WKII_ABI,
+            functionName: "withdraw",
+            args: [valueInWei],
+            chainId: kiiTestnet.id,
+        });
+    };
 
     return {
-        wrap: (amount: string) =>
-            wrapWrite({
-                abi: WKII_ABI,
-                address: WKII_ADDRESS,
-                functionName: "deposit",
-                value: parseEther(amount),
-            }),
+        wrap,
+        unwrap,
         isWrapping,
-        unwrap: (amount: string) =>
-            unwrapWrite({
-                abi: WKII_ABI,
-                address: WKII_ADDRESS,
-                functionName: "withdraw",
-                args: [parseEther(amount)],
-            }),
         isUnwrapping,
     };
 };

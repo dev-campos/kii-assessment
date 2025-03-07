@@ -1,0 +1,17 @@
+{
+    "framework": "nextjs",
+    "buildCommand": "pnpm build",
+    "devCommand": "pnpm dev",
+    "installCommand": "pnpm install",
+    "regions": [
+        "iad1"
+    ],
+    "git": {
+        "deploymentEnabled": {
+            "main": true
+        }
+    },
+    "env": {
+        "ENVIRONMENT": "production"
+    }
+}
