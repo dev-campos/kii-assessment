@@ -1,8 +1,8 @@
 {
     "framework": "nextjs",
-    "buildCommand": "pnpm build",
-    "devCommand": "pnpm dev",
-    "installCommand": "pnpm install",
+    "buildCommand": "npm run build",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install",
     "regions": [
         "iad1"
     ],
@@ -13,5 +13,6 @@
     },
     "env": {
         "ENVIRONMENT": "production"
-    }
+    },
+    "nodeVersion": "22.x"
 }
