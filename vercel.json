@@ -13,6 +13,5 @@
     },
     "env": {
         "ENVIRONMENT": "production"
-    },
-    "nodeVersion": "22.x"
+    }
 }
